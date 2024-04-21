@@ -8,7 +8,6 @@ from PIL import Image
 from io import BytesIO
 
 images_desired = 100
-# random_strings = set()
 base_url = "https://prnt.sc/"
 save_path = r"C:\repo\ImageDownloader\PrntScnImages\\"
 removed_image_path = r"C:\repo\ImageDownloader\assets\screenshot_removed.png"
@@ -16,6 +15,12 @@ imgur_not_available = r"C:\repo\ImageDownloader\assets\imgur_not_available.png"
 existing_screenshots = os.listdir(save_path)
 existing_screenshots = [screenshot[0:-4] for screenshot in existing_screenshots]
 tried_strings_path = r"C:\repo\ImageDownloader\assets\random_strings.txt"
+
+
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choices(characters, k=length))
+    return random_string
 
 
 def is_removed_image(downloaded_image_response):
@@ -53,9 +58,11 @@ with open(tried_strings_path, 'r') as file:
 
 i = 0
 while i < images_desired:
-    rand_text = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-    while rand_text in existing_screenshots and rand_text not in tried_strings:
-        rand_text = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    rand_text = generate_random_string(6)
+    # keep generating random string until it is one we haven't done before
+    while rand_text in existing_screenshots or rand_text in tried_strings:
+        rand_text = generate_random_string(6)
+        print(rand_text)
 
     image_url = base_url + rand_text
     filename = save_path + rand_text + '.png'
@@ -67,6 +74,12 @@ while i < images_desired:
     if r.status_code == 200:
         soup = BeautifulSoup(r.content, features="html.parser")
         img_elements = soup.find_all("img", {"class": "no-click screenshot-image"})
+
+        if len(img_elements) == 0:
+            print('no screenshot')
+            with open(tried_strings_path, 'a') as file:  # record that we tried this string
+                file.write(rand_text + '\n')
+            continue
 
         for image in img_elements:
             image_url = image['src']
@@ -92,9 +105,9 @@ while i < images_desired:
                     print('Image successfully Downloaded: ', filename)
                     # with open(filename, 'wb') as f:
                     #     shutil.copyfileobj(s.raw, f)
-                    with open(tried_strings_path, 'a') as file:
-                        file.write(rand_text + '\n')
                     i += 1
+                with open(tried_strings_path, 'a') as file:  # record that we tried this string
+                    file.write(rand_text + '\n')
             else:
                 print('Image could not be retrieved')
     else:
