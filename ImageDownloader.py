@@ -11,11 +11,11 @@ images_desired = 100
 # random_strings = set()
 base_url = "https://prnt.sc/"
 save_path = r"C:\repo\ImageDownloader\PrntScnImages\\"
-removed_image_path = r"C:\repo\ImageDownloader\PrntScnImages\assets\screenshot_removed.png"
-imgur_not_available = r"C:\repo\ImageDownloader\PrntScnImages\assets\imgur_not_available.png"
+removed_image_path = r"C:\repo\ImageDownloader\assets\screenshot_removed.png"
+imgur_not_available = r"C:\repo\ImageDownloader\assets\imgur_not_available.png"
 existing_screenshots = os.listdir(save_path)
 existing_screenshots = [screenshot[0:-4] for screenshot in existing_screenshots]
-tried_strings_path = r"C:\repo\ImageDownloader\PrntScnImages\assets\random_strings.txt"
+tried_strings_path = r"C:\repo\ImageDownloader\assets\random_strings.txt"
 
 
 def is_removed_image(downloaded_image_response):
